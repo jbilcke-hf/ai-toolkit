@@ -12,6 +12,7 @@ import { TopBar, MainContent } from '@/components/layout';
 import UniversalTable, { TableColumn } from '@/components/UniversalTable';
 import { apiClient } from '@/utils/api';
 import { useRouter } from 'next/navigation';
+import AutomaticImportModal, { openAutomaticImportModal } from '@/components/AutomaticImportModal';
 
 export default function Datasets() {
   const router = useRouter();
@@ -117,12 +118,18 @@ export default function Datasets() {
           <h1 className="text-2xl font-semibold text-gray-100">Datasets</h1>
         </div>
         <div className="flex-1"></div>
-        <div>
+        <div className="flex gap-2">
           <Button
             className="text-gray-200 bg-slate-600 px-4 py-2 rounded-md hover:bg-slate-500 transition-colors"
             onClick={() => openNewDatasetModal()}
           >
             New Dataset
+          </Button>
+          <Button
+            className="text-gray-200 bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-500 transition-colors"
+            onClick={() => openAutomaticImportModal(refreshDatasets)}
+          >
+            Automatic Import
           </Button>
         </div>
       </TopBar>
@@ -169,6 +176,8 @@ export default function Datasets() {
           </form>
         </div>
       </Modal>
+
+      <AutomaticImportModal />
     </>
   );
 }

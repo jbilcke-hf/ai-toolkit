@@ -577,6 +577,37 @@ export default function SimpleJob({
         <div>
           <Card title="Datasets">
             <>
+              <button
+                type="button"
+                onClick={() => {
+                  // Parse frames from dataset name (e.g., "dataset_101frames" -> 101)
+                  const parseFramesFromDatasetName = (name: string): number => {
+                    const match = name.match(/(\d+)frames?/i);
+                    return match ? parseInt(match[1], 10) : 1;
+                  };
+
+                  // Create dataset configurations for all available datasets
+                  const allDatasets = datasetOptions.map((option: { value: string; label: string }) => {
+                    const datasetName = option.label;
+                    const numFrames = parseFramesFromDatasetName(datasetName);
+                    const controls = modelArch?.controls ?? [];
+
+                    return {
+                      ...objectCopy(defaultDatasetConfig),
+                      folder_path: option.value,
+                      controls: controls,
+                      num_frames: numFrames,
+                      do_i2v: false, // Set to false by default as requested
+                      resolution: [512, 768, 1024, 1280, 1536], // Enable up to 1280 and 1536
+                    };
+                  });
+
+                  setJobConfig(allDatasets, 'config.process[0].datasets');
+                }}
+                className="w-full px-4 py-2 mb-4 bg-blue-700 hover:bg-blue-600 rounded-lg transition-colors font-medium"
+              >
+                Use All Datasets
+              </button>
               {jobConfig.config.process[0].datasets.map((dataset, i) => (
                 <div key={i} className="p-4 rounded-lg bg-gray-800 relative">
                   <button
