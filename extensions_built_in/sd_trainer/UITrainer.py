@@ -230,6 +230,9 @@ class UITrainer(SDTrainer):
     def end_step_hook(self):
         super(UITrainer, self).end_step_hook()
         self.update_step()
+        # Flush async operations every 10 steps to ensure DB is updated
+        if self.step_num % 10 == 0:
+            asyncio.run(self.wait_for_all_async())
         self.maybe_stop()
 
     def hook_before_model_load(self):

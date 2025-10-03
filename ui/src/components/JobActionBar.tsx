@@ -3,7 +3,7 @@ import { Eye, Trash2, Pen, Play, Pause, Cog } from 'lucide-react';
 import { Button } from '@headlessui/react';
 import { openConfirm } from '@/components/ConfirmModal';
 import { Job } from '@prisma/client';
-import { startJob, stopJob, deleteJob, getAvaliableJobActions, markJobAsStopped } from '@/utils/jobs';
+import { startJob, stopJob, deleteJob, getAvaliableJobActions, markJobAsStopped, syncJobProgress } from '@/utils/jobs';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 
 interface JobActionBarProps {
@@ -99,7 +99,24 @@ export default function JobActionBar({ job, onRefresh, afterDelete, className, h
         <MenuItems anchor="bottom" className="bg-gray-900 border border-gray-700 rounded shadow-lg w-48 px-4 py-2 mt-4">
           <MenuItem>
             <div
-              className="cursor-pointer"
+              className="cursor-pointer py-1"
+              onClick={async () => {
+                try {
+                  const result = await syncJobProgress(job.id);
+                  alert(`Progress synced successfully! Current step: ${result.step}`);
+                  onRefresh && onRefresh();
+                } catch (error) {
+                  console.error('Error syncing progress:', error);
+                  alert('Failed to sync progress. See console for details.');
+                }
+              }}
+            >
+              Sync Progress
+            </div>
+          </MenuItem>
+          <MenuItem>
+            <div
+              className="cursor-pointer py-1"
               onClick={() => {
                 let message = `Are you sure you want to mark this job as stopped? This will set the job status to 'stopped' if the status is hung. Only do this if you are 100% sure the job is stopped. This will NOT stop the job.`;
                 openConfirm({

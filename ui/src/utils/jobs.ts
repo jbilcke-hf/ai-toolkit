@@ -66,6 +66,22 @@ export const markJobAsStopped = (jobID: string) => {
   });
 };
 
+export const syncJobProgress = (jobID: string) => {
+  return new Promise<{ step: number }>((resolve, reject) => {
+    apiClient
+      .post(`/api/jobs/${jobID}/sync`)
+      .then(res => res.data)
+      .then(data => {
+        console.log('Job progress synced:', data);
+        resolve(data);
+      })
+      .catch(error => {
+        console.error('Error syncing job progress:', error);
+        reject(error);
+      });
+  });
+};
+
 export const getJobConfig = (job: Job) => {
   return JSON.parse(job.job_config) as JobConfig;
 };
